@@ -72,7 +72,7 @@ sim.run(
 # =========================================================================================================#
 
 visualization = init_visualization(sim)
-visualization.animate_cus_units(
+visualization.animate(
     xlim=[-15 * Å, 15 * Å], animation_duration=10, save_animation=False, fps=30
 )
 

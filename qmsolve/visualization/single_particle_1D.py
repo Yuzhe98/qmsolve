@@ -417,7 +417,7 @@ class TimeVisualizationSingleParticle1D(TimeVisualization):
 
         ax = fig.add_subplot(1, 1, 1)
 
-        ax.set_xlabel("(Å)")
+        ax.set_xlabel("x (Å)")
         ax.set_title("$\\psi(x,t)$")
 
         time_ax = ax.text(
@@ -452,6 +452,63 @@ class TimeVisualizationSingleParticle1D(TimeVisualization):
         )
         abs_plot = ax.plot(
             x / Å,
+            np.abs(self.simulation.Ψ_plot[index]),
+            label="$|\\psi(x)|$",
+            color="white",
+        )
+        ax.legend("lower left")
+
+        plt.show()
+
+    def plot_axion_earth(self, t, xlim=None, figsize=(16 / 9 * 5.804 * 0.9, 5.804)):
+
+        self.simulation.Ψ_plot = self.simulation.Ψ / self.simulation.Ψmax
+        plt.style.use("dark_background")
+
+        fig = plt.figure(figsize=figsize)
+
+        ax = fig.add_subplot(1, 1, 1)
+
+        ax.set_xlabel("x (Earth radius)")
+        ax.set_title("$\\psi(x,t)$")
+
+        time_ax = ax.text(
+            0.97, 0.97, "", color="white", transform=ax.transAxes, ha="right", va="top"
+        )
+        # time_ax.set_text("t = {} femtoseconds".format("%.3f" % (t / femtoseconds)))
+        time_ax.set_text(f"t = {t / s:.3e} seconds")
+
+        if xlim != None:
+            ax.set_xlim(np.array(xlim) / earth_radius)
+
+        index = int((self.simulation.store_steps) / self.simulation.total_time * t)
+
+        L = self.simulation.H.extent / earth_radius
+
+        x = np.linspace(
+            -self.simulation.H.extent / 2,
+            self.simulation.H.extent / 2,
+            self.simulation.H.N,
+        )
+
+        potential_plot = ax.plot(
+            x / earth_radius,
+            (self.simulation.H.Vgrid + self.simulation.Vmin)
+            / (self.simulation.Vmax - self.simulation.Vmin),
+            label="$V(x)$",
+        )
+        real_plot = ax.plot(
+            x / earth_radius,
+            np.real(self.simulation.Ψ_plot[index]),
+            label="$Re|\\psi(x)|$",
+        )
+        imag_plot = ax.plot(
+            x / earth_radius,
+            np.imag(self.simulation.Ψ_plot[index]),
+            label="$Im|\\psi(x)|$",
+        )
+        abs_plot = ax.plot(
+            x / earth_radius,
             np.abs(self.simulation.Ψ_plot[index]),
             label="$|\\psi(x)|$",
             color="white",
@@ -567,15 +624,16 @@ class TimeVisualizationSingleParticle1D(TimeVisualization):
     def animate_cus_units(
         self,
         xlim=None,
-        figsize=(16 / 9 * 5.804 * 0.9, 5.804),
+        figsize=(8, 6),
         animation_duration=5,
         fps=20,
-        playspeed:float=1.0,
+        playspeed: float = 1.0,
         save_animation=False,
     ):
         total_frames = int(fps * animation_duration / playspeed)
         dt = self.simulation.total_time / total_frames
         self.simulation.Ψ_plot = self.simulation.Ψ / self.simulation.Ψmax
+        plt.rc("font", size=14)  # font size for all figures
         plt.style.use("dark_background")
 
         fig = plt.figure(figsize=figsize)
@@ -585,50 +643,55 @@ class TimeVisualizationSingleParticle1D(TimeVisualization):
 
         index = 0
 
-        ax.set_xlabel("(Å)")
+        ax.set_xlabel("x (Earth radius)")
         ax.set_title("$\\psi(x,t)$")
 
         time_ax = ax.text(
             0.97, 0.97, "", color="white", transform=ax.transAxes, ha="right", va="top"
         )
-        time_ax.set_text("t = {} femtoseconds".format("%.3f" % (0.0 / femtoseconds)))
+        # time_ax.set_text("t = {} femtoseconds".format("%.3f" % (0.0 / femtoseconds)))
+        time_ax.set_text(f"t = {0.0:3e} seconds")
 
         if xlim != None:
-            ax.set_xlim(np.array(xlim) / Å)
+            ax.set_xlim(np.array(xlim) / earth_radius)
 
         index = 0
 
-        L = self.simulation.H.extent / Å
+        L = self.simulation.H.extent / earth_radius
 
         x = np.linspace(
             -self.simulation.H.extent / 2,
             self.simulation.H.extent / 2,
             self.simulation.H.N,
         )
-        # ax2.plot(x, y2, 'r--', label='scaled')
-        ax2.set_ylabel('Potential')
-        ax2.tick_params(axis='y')
 
-        potential_plot = ax2.plot(
-            x / Å,
-            self.simulation.H.Vgrid, 
-            # (self.simulation.H.Vgrid + self.simulation.Vmin)
-            # / (self.simulation.Vmax - self.simulation.Vmin),
-            label="$V(x)$",
-        )
-        (real_plot,) = ax.plot(
-            x / Å, np.real(self.simulation.Ψ_plot[index]), label="$Re|\\psi(x)|$"
-        )
-        (imag_plot,) = ax.plot(
-            x / Å, np.imag(self.simulation.Ψ_plot[index]), label="$Im|\\psi(x)|$"
-        )
+        # (real_plot,) = ax.plot(
+        #     x / earth_radius,
+        #     np.real(self.simulation.Ψ_plot[index]),
+        #     label="$Re|\\psi(x)|$",
+        # )
+        # (imag_plot,) = ax.plot(
+        #     x / earth_radius,
+        #     np.imag(self.simulation.Ψ_plot[index]),
+        #     label="$Im|\\psi(x)|$",
+        # )
         (abs_plot,) = ax.plot(
-            x / Å,
+            x / earth_radius,
             np.abs(self.simulation.Ψ_plot[index]),
             label="$|\\psi(x)|$",
             color="white",
         )
         ax.legend(loc="lower left")
+
+        potential_plot = ax2.plot(
+            x / earth_radius,
+            self.simulation.H.Vgrid,
+            # (self.simulation.H.Vgrid + self.simulation.Vmin)
+            # / (self.simulation.Vmax - self.simulation.Vmin),
+            label="$V(x)$",
+        )
+        ax2.set_ylabel("Potential")
+        ax2.tick_params(axis="y")
 
         # import matplotlib.animation as animation
 
@@ -637,11 +700,7 @@ class TimeVisualizationSingleParticle1D(TimeVisualization):
 
         def func_animation(*arg):
 
-            time_ax.set_text(
-                "t = {} femtoseconds".format(
-                    "%.3f" % (animation_data["t"] / femtoseconds)
-                )
-            )
+            time_ax.set_text(f"t = {animation_data["t"] / s:.3e} seconds")
 
             animation_data["t"] = animation_data["t"] + dt
             if animation_data["t"] > self.simulation.total_time:
@@ -655,11 +714,12 @@ class TimeVisualizationSingleParticle1D(TimeVisualization):
                 * animation_data["t"]
             )
 
-            real_plot.set_ydata(np.real(self.simulation.Ψ_plot[index]))
-            imag_plot.set_ydata(np.imag(self.simulation.Ψ_plot[index]))
+            # real_plot.set_ydata(np.real(self.simulation.Ψ_plot[index]))
+            # imag_plot.set_ydata(np.imag(self.simulation.Ψ_plot[index]))
             abs_plot.set_ydata(np.abs(self.simulation.Ψ_plot[index]))
 
-            return potential_plot, real_plot, imag_plot, abs_plot, time_ax
+            # return potential_plot, real_plot, imag_plot, abs_plot, time_ax
+            return potential_plot, abs_plot, time_ax
 
         frame = 0
         a = animation.FuncAnimation(
