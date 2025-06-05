@@ -26,7 +26,7 @@ from qmsolve.util.constants import femtoseconds, m_e, Å, m
 # =========================================================================================================#
 
 #
-scaling = 1e7
+scaling = 1e5
 extent = scaling * 30 * Å
 
 # m_particle = m_e / np.sqrt(scaling)
@@ -57,7 +57,7 @@ H = Hamiltonian(
     particles=SingleParticle(m=m_particle),
     potential=harmonic_oscillator,
     spatial_ndim=1,
-    N=50000,
+    N=10000,
     extent=extent,
 )
 
@@ -109,6 +109,6 @@ visualization.animate_cus_units(
 )
 
 # for visualizing a single frame, use plot method instead of animate:
-visualization.plot(t=0 * femtoseconds, xlim=[-extent / 2, extent / 2])
-visualization.plot(t=half_period, xlim=[-extent / 2, extent / 2])
+# visualization.plot(t=0 * femtoseconds, xlim=[-extent / 2, extent / 2])
+# visualization.plot(t=half_period, xlim=[-extent / 2, extent / 2])
 # visualization.plot(t=0.35 * femtoseconds, xlim=[-extent / 2, extent / 2])

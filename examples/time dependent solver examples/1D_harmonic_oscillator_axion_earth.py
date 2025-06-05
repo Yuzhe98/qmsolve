@@ -58,11 +58,11 @@ check(ma_au)
 # k_harmonic = m_particle * omega**2
 # check(k_harmonic)
 
-play_period = 2  # (s) playtime of 1/2 period
+play_period = 3  # (s) playtime of 1/2 period
 
 # omega = (2 * earth_pot_au / (m_particle * earth_radius**2)) ** 0.5 * 10**(-0.0)
 
-factor = 1e3
+factor = 1e2
 omega = 2 * np.pi * 4.780345599341959e-21 * factor
 # omega = 2 * np.pi * 4.780345599341959e-21
 check(omega)
@@ -75,7 +75,7 @@ k_earth = m_particle * omega**2
 check(0.5 * k_earth * (earth_radius) ** 2)
 
 
-total_time = period * 5
+total_time = period * 10
 num_step_time = 20000
 dt = total_time / num_step_time
 store_steps = int(num_step_time // 4)
@@ -98,7 +98,7 @@ def earth_grav_pot(particle):
     # w = 2 * np.pi / period
     # k = m * w**2
     # return 0.5 * k_harmonic * (particle.x) ** 2
-    return m_particle * Phi_func(particle.x) * factor
+    return m_particle * Phi_func(particle.x) * factor**2
 
 
 # build the Hamiltonian of the system
