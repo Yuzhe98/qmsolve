@@ -1,5 +1,6 @@
 import os
 import sys
+
 print(os.path.abspath(os.curdir))
 sys.path.insert(0, os.path.abspath(os.curdir))
 
@@ -16,7 +17,7 @@ import pandas as pd
 import time
 
 from scipy.interpolate import interp1d
-from qmsolve.util.constants import kg, J, m, s
+from qmsolve.util.constants import kg, J, m, s, earth_radius
 
 
 def GiveDateandTime():
@@ -304,11 +305,94 @@ def earth_grav_potential_earth_center_au():
         fill_value="extrapolate",
         bounds_error=False,
     )
-    check(np.amax(r_sym_sorted) / m)
+    # check(np.amax(r_sym_sorted) / m)
     return Phi_func
 
 
-if __name__ == "__main__":
+def plot_dual_harmonic_oscillator():
+    extent = 10 * earth_radius
+    radii = np.linspace(-extent / 2, extent / 2, num=1000)
     Phi_func = earth_grav_potential_earth_center_au()
-    print(Phi_func(0))
-    print(f"{Phi_func(6e6 * m):.3e}")
+
+    # plot style
+    plt.rc("font", size=6)  # font size for all figures
+    # plt.rcParams['font.family'] = 'serif'
+    # plt.rcParams['font.serif'] = ['Times New Roman']
+    plt.rcParams["font.family"] = "Times New Roman"
+    # plt.rcParams['mathtext.fontset'] = 'dejavuserif'
+
+    # Make math text match Times New Roman
+    plt.rcParams["mathtext.fontset"] = "cm"
+    plt.rcParams["mathtext.rm"] = "Times New Roman"
+
+    # plt.style.use('seaborn-dark')  # to specify different styles
+    # print(plt.style.available)  # if you want to know available styles
+
+    cm = 1 / 2.56  # convert cm to inch
+
+    fig = plt.figure(figsize=(8.5 * cm, 6 * cm), dpi=300)  # initialize a figure
+
+    gs = gridspec.GridSpec(nrows=1, ncols=1)  # create grid for multiple figures
+
+    ax00 = fig.add_subplot(gs[0, 0])
+    ax00.plot(
+        radii / earth_radius,
+        Phi_func(np.abs(radii)),
+        label="Obtained by earth density and calculation",
+        # color="darkorange",
+        # linestyle="dashed",
+    )
+    # ax00.plot(
+    #     radii / earth_radius,
+    #     dual_harmonic_oscillator(radii),
+    #     label="dual_harmonic_oscillator",
+    # )
+    # ax00.set_ylim(0, 15)
+    ax00.set_xlabel("Radius (earth radius)")
+    ax00.set_ylabel("Grav. Pot. (atomic units)")
+
+    ax00.legend()
+    # ax10.gca().invert_xaxis()  # Optional: so Earth's center is on the left
+
+    fig.suptitle("")
+    fig.tight_layout()
+    # plt.savefig("figures/Earth_Profiles_(PEM_Data).png", transparent=False)
+    plt.show()
+
+    return
+
+
+def dual_harmonic_oscillator(x):
+    x = np.asarray(x)  # ensure array input
+    # radius = np.abs(x)
+    ma_au = 8.09329979249468e-15  # 1-MHz axion mass
+    m_particle = ma_au
+    factor = 1e0
+    omega = 2 * np.pi * 9.8e-21 * factor
+    k_earth = omega**2  #
+    x1 = earth_radius * 3450 / 6371.0
+    check(x1)
+    check(k_earth)
+    check(omega)
+    check(earth_radius)
+    factor1 = 1
+    result = np.where(
+        np.abs(x) < x1,
+        0.5 * k_earth * x**2,
+        0.5 * k_earth * factor1 * x**2 + 0.5 * k_earth * (1 - factor1) * x1**2,
+    )
+    return result
+
+
+if __name__ == "__main__":
+    # extent = 10 * earth_radius
+    # radii = np.linspace(-extent / 2, extent / 2, num=10)
+    # # check(dual_harmonic_oscillator(radii))
+    # result = np.where(
+    #     np.abs(radii) < earth_radius,
+    #     0.5,
+    #     0.5 + 0.5,
+    # )
+    # check(result)
+    # check(dual_harmonic_oscillator(radii))
+    plot_dual_harmonic_oscillator()

@@ -1,17 +1,11 @@
 # This file:
 # examples\time dependent solver examples\1D_harmonic_oscillator_copy.py
 
-
 import os
 import sys
-
 print(os.path.abspath(os.curdir))
-# os.chdir("..")  # go to parent folder
-# print(os.path.abspath(os.curdir))
 sys.path.insert(0, os.path.abspath(os.curdir))
-# os.chdir("qmsolve")
-# sys.path.insert(0, os.path.abspath(os.curdir))
-# print(os.path.abspath(os.curdir))
+
 
 import numpy as np
 
